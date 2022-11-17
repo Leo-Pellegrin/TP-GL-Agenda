@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -105,8 +106,10 @@ public class FixedTerminationEvent extends RepetitiveEvent {
     @Override
     public boolean isInDay(LocalDate day){
         LocalDate date = this.getStart().toLocalDate();
-  
         while(date.isBefore(ChronoLocalDate.from(this.getTerminationDate()))){
+            if(this.getException().contains(day)){
+                return false;
+            }
             if(date.equals(day)){
                 return true;
             }
@@ -117,8 +120,9 @@ public class FixedTerminationEvent extends RepetitiveEvent {
                 date = date.plusWeeks(1);
             }
             else if(this.getFrequency() == ChronoUnit.MONTHS){
-                date = date.plusYears(1);
+                date = date.plusMonths(1);
             }
+
         }
         return false;
     }

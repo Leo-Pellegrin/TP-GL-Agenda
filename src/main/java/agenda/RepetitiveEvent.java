@@ -2,6 +2,7 @@ package agenda;
 
 import java.util.*;
 import java.time.*;
+import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
@@ -25,10 +26,12 @@ public class RepetitiveEvent extends Event {
     private LocalDateTime start;
     private Duration duration;
     private ChronoUnit frequency;
+    private HashSet<LocalDate> lRepEvent;
 
     public RepetitiveEvent(String title, LocalDateTime start, Duration duration, ChronoUnit frequency) {
         super(title, start, duration);
         this.frequency = frequency;
+        this.lRepEvent = new HashSet<LocalDate>();
     }
 
     /**
@@ -37,7 +40,11 @@ public class RepetitiveEvent extends Event {
      * @param date the event will not occur at this date
      */
     public void addException(LocalDate date) {
-        
+        this.lRepEvent.add(date);
+    }
+
+    public HashSet<LocalDate> getException(){
+        return this.lRepEvent;
     }
 
     /**
@@ -48,4 +55,16 @@ public class RepetitiveEvent extends Event {
         return frequency;
     }
 
+    @Override
+    public boolean isInDay(LocalDate aDay) {
+        if(!(aDay.isBefore(this.getStart().toLocalDate()) || aDay.isAfter(this.getStart().plus(this.getDuration()).toLocalDate())))return true;
+        LocalDateTime temp = this.getStart();
+        while((temp.isBefore(aDay.atStartOfDay()))){
+            temp = temp.plus(getFrequency().getDuration());
+            if (!(aDay.isBefore(temp.toLocalDate()) || aDay.isAfter(temp.plus(this.getDuration()).toLocalDate()))) {
+                if(!getException().contains(aDay)) return true;
+            }
+        }
+        return false;
+    }
 }

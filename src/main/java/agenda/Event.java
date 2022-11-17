@@ -1,6 +1,10 @@
 package agenda;
 
 import java.time.*;
+import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 
 public class Event {
 
@@ -40,10 +44,15 @@ public class Event {
      * @return true if the event occurs on that day, false otherwise
      */
     public boolean isInDay(LocalDate aDay) {
-        // TODO : implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        LocalDate tmp = myStart.toLocalDate();
+        if((aDay.getDayOfYear() == myStart.getDayOfYear() &&  aDay.getYear() == myStart.getYear()) 
+            || (aDay.isAfter(ChronoLocalDate.from(myStart)) && aDay.isBefore(ChronoLocalDate.from(myStart.plus(myDuration)))) 
+            || (aDay.getDayOfYear() == myStart.plus(myDuration).getDayOfYear() && aDay.getYear() == myStart.plus(myDuration).getYear())){
+            return true;
+        }
+        return false;
     }
-   
+
     /**
      * @return the myTitle
      */
@@ -64,6 +73,10 @@ public class Event {
      */
     public Duration getDuration() {
         return myDuration;
+    }
+
+    public String toString(){
+        return myTitle;
     }
 
    

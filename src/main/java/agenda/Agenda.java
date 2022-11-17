@@ -12,7 +12,11 @@ public class Agenda {
      *
      * @param e the event to add
      */
-    ArrayList<Event> lEvents;
+    private ArrayList<Event> lEvents;
+
+    public Agenda(){
+        lEvents = new ArrayList<Event>();
+    }
 
     public void addEvent(Event e){
         lEvents.add(e);

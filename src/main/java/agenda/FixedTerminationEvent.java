@@ -1,9 +1,13 @@
 package agenda;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 /**
  * Description : A repetitive event that terminates after a given date, or after
@@ -35,10 +39,6 @@ public class FixedTerminationEvent extends RepetitiveEvent {
 
     public FixedTerminationEvent(String title, LocalDateTime start, Duration duration, ChronoUnit frequency, LocalDate terminationInclusive) {
         super(title, start, duration, frequency);
-        this.title = title;
-        this.start = start;
-        this.duration = duration;
-        this.frequency = frequency;
         this.terminationInclusive = terminationInclusive;
     }
 
@@ -66,11 +66,60 @@ public class FixedTerminationEvent extends RepetitiveEvent {
      * @return the termination date of this repetitive event
      */
     public LocalDate getTerminationDate() {
-        return terminationInclusive;  
+        if(Objects.isNull(terminationInclusive)){
+            LocalDateTime tmp = this.getStart();
+            for(int i = 1; i < this.getNumberOfOccurrences(); i++){
+                tmp = tmp.plus(this.getFrequency().getDuration());
+            }
+            return tmp.toLocalDate();
+        }
+        return terminationInclusive;
     }
 
-    public long getNumberOfOccurrences() {
-        return numberOfOccurrences;
+    /**
+     * @return
+     */
+    public long getNumberOfOccurrences(){
+        if(terminationInclusive == null){
+            return numberOfOccurrences;
+        }
+        else {
+            int tmp = 0;
+            LocalDate date = this.getStart().toLocalDate();
+            while(date.isBefore(ChronoLocalDate.from(this.terminationInclusive))){
+                if(this.getFrequency() == ChronoUnit.DAYS){
+                    date = date.plusDays(1);
+                }
+                else if(this.getFrequency() == ChronoUnit.WEEKS){
+                    date = date.plusWeeks(1);
+                }
+                else if(this.getFrequency() == ChronoUnit.MONTHS){
+                    date = date.plusYears(1);
+                }
+                tmp += 1;
+            }
+            return tmp;
+        }
     }
-        
+
+    @Override
+    public boolean isInDay(LocalDate day){
+        LocalDate date = this.getStart().toLocalDate();
+  
+        while(date.isBefore(ChronoLocalDate.from(this.getTerminationDate()))){
+            if(date.equals(day)){
+                return true;
+            }
+            if(this.getFrequency() == ChronoUnit.DAYS){
+                date = date.plusDays(1);
+            }
+            else if(this.getFrequency() == ChronoUnit.WEEKS){
+                date = date.plusWeeks(1);
+            }
+            else if(this.getFrequency() == ChronoUnit.MONTHS){
+                date = date.plusYears(1);
+            }
+        }
+        return false;
+    }
 }

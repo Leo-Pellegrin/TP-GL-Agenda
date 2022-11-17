@@ -1,7 +1,9 @@
 package agenda;
 
+import java.sql.Date;
 import java.time.*;
 import java.time.chrono.ChronoLocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.time.temporal.TemporalUnit;
@@ -44,10 +46,10 @@ public class Event {
      * @return true if the event occurs on that day, false otherwise
      */
     public boolean isInDay(LocalDate aDay) {
-        LocalDate tmp = myStart.toLocalDate();
         if((aDay.getDayOfYear() == myStart.getDayOfYear() &&  aDay.getYear() == myStart.getYear()) 
             || (aDay.isAfter(ChronoLocalDate.from(myStart)) && aDay.isBefore(ChronoLocalDate.from(myStart.plus(myDuration)))) 
-            || (aDay.getDayOfYear() == myStart.plus(myDuration).getDayOfYear() && aDay.getYear() == myStart.plus(myDuration).getYear())){
+            || (aDay.getDayOfYear() == myStart.plus(myDuration).getDayOfYear() && aDay.getYear() == myStart.plus(myDuration).getYear())
+            ){
             return true;
         }
         return false;
